@@ -1,0 +1,131 @@
+from tkinter import *
+import tkinter as tk
+from tkinter import ttk
+import PIL
+from PIL import Image,ImageTk
+from instaloader.structures import Post
+from word2number import w2n
+import instaloader
+from num2words import num2words
+from tkinter import messagebox
+from time import sleep
+import random
+import os
+from threading import *
+import threading
+from tkinter import messagebox as mb
+import re
+
+window=Tk()
+window.config(bg="#FFE4C4")
+
+window.geometry("800x700")
+window.maxsize(800,700)
+window.minsize(800,700)
+window.title("Instagram Media Downloader")
+
+
+#Function 
+def change_color():
+    color=["red","blue","#4285F4","green","black","#DB4437","#FF00FF"]
+    for i in range(1):
+        color=random.choice(color)
+        lable.config(fg=color)
+        lable.after(900,change_color)
+
+def Entry_animation():
+    color=["red","blue","#4285F4","green","black","#DB4437","#FF00FF"]
+    lable_entry.config(text="Enter URL or User Name",font=("Copperplate Gothic Bold",17),fg=random.choice(color))
+    lable_entry.after(800,Entry_animation)
+
+
+
+def download_profile():
+    test = instaloader.Instaloader()
+    user_name=url_entry.get()
+    test.download_profile(user_name, profile_pic_only = True)
+    profile = instaloader.Profile.from_username(test.context, user_name)
+    messagebox.showinfo("Insta Downloader","Check File is Downloader")
+    delete_unuse_file(user_name)
+
+
+def download_media():
+
+        test = instaloader.Instaloader()
+        user_name=url_entry.get()
+        profile = instaloader.Profile.from_username(test.context, user_name)
+        posts = profile.get_posts()
+        for post in posts:
+
+            test.download_post(post, target=f"{profile.username}")
+
+        messagebox.showinfo("Insta Downloader","Check File is Downloader")
+        delete_unuse_file(user_name)
+
+
+def delete_unuse_file(folderName):
+    res = mb.askquestion('Delete Unnecessary Files', 
+                         'Do you Want to Delete Unnecessary Files ')
+    if res == 'yes' :
+        path=os.getcwd()
+        path=path+"\\"+folderName
+
+        list_data=os.listdir(path)
+        files_path=[]
+        for i in list_data:
+            a=path+"\\"+i
+            files_path.append(a)
+        
+        for j in files_path:
+            if j.endswith(".jpg") or j.endswith(".mp4"):
+                pass
+            else:
+                os.remove(j)
+        messagebox.showinfo("Done!","All Unwanted Files are Deleted")
+
+
+
+lable=Label(window,text="Instagram Media Downloader",font=("Copperplate Gothic Bold",20),fg="RED",borderwidth=3,bg="#FFE4C4")
+lable.place(x=100,y=5,height=22,width=600)
+
+lable_entry=Label(window,text="Enter URL",font=("Copperplate Gothic Bold",15),fg="RED",borderwidth=3,bg="#FFE4C4")
+lable_entry.place(x=5,y=69,height=40)
+"""
+photo = PhotoImage(file="D:\\Ashu_Documents\\Python_Ashu_Files\\instagram\\arrow3.png")
+varun_label = Label(image=photo,)
+varun_label.place(x=180,y=69)
+"""
+url_entry=Entry(window,font=("Arial Bold",20))
+url_entry.place(x=380,y=66,height=40,width=400)
+
+photo = PhotoImage(file = "D:\\Ashu_Documents\\Python_Ashu_Files\\instagram\\geek0\\download.png")
+
+CheckVar1 = IntVar()
+CheckVar2 = IntVar()
+CheckVar3=IntVar()
+CheckVar4=IntVar()
+
+C1 = Checkbutton(window, text = "Profile Pic ", variable = CheckVar1,onvalue = 1, offvalue = 0, height=5,width = 40,bg="#FFE4C4",font=("Arial Bold",10),activebackground="#FFE4C4",activeforeground="black")
+C1.place(x=-80,y=150)
+
+btn1=Button(window,text="Download Profile",image=photo,bg="#FFE4C4",activebackground="#FFE4C4",activeforeground="black",command=download_profile)
+btn1.place(x=250,y=150)
+
+btn2=Button(window,text="Posts",image=photo,bg="#FFE4C4",activebackground="#FFE4C4",activeforeground="black",command=download_media)
+btn2.place(x=250,y=280)
+
+C2 = Checkbutton(window, text = "All Posts", variable = CheckVar2,onvalue = 1, offvalue = 0, height=5,width = 15,bg="#FFE4C4",font=("Arial Bold",10),activebackground="#FFE4C4",activeforeground="black")
+C2.place(x=10,y=280)
+
+
+
+# progress=ttk.Progressbar(window,orient=HORIZONTAL,length=500,mode="determinate")
+# progress.place(x=150,y=400)
+
+
+Thread(target=change_color())
+
+Thread(target=Entry_animation())
+
+
+window.mainloop()
